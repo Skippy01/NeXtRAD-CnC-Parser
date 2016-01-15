@@ -84,32 +84,64 @@ TgtLocationHt = 0.0235;
 % Pulse Parameters
 
 NumberOfPulses = 1
+Repeats = 64
 
 % Pulse 1 parameters
 [pulse1]
-
-MBoffset  = 10000			% offsets are in us
+% offsets are in us
+MBoffset  = 10000			
 DIGoffset = 10000
 PRIoffset = 10000
-
-Frequency = 8500			% in mHz
+% in mHz
+Frequency = 8500
+% Either (V)ertical or (H)orizontal			
 TxPol     = V
 RxPol     = H
 
 % Pulse 2 parameters
 [pulse2]
-
-MBoffset  = 10000			% offsets are in us
+MBoffset  = 10000			
 DIGoffset = 10000
 PRIoffset = 10000
-
-Frequency = 8500			% in mHz
+Frequency = 8500			
 TxPol     = V
 RxPol     = H
 
 
+[pulse3]
+MBoffset  = 10000			
+DIGoffset = 10000
+PRIoffset = 10000
+Frequency = 8500			
+TxPol     = V
+RxPol     = H
 
 
+[pulse4]
+MBoffset  = 10000			
+DIGoffset = 10000
+PRIoffset = 10000
+Frequency = 8500			
+TxPol     = V
+RxPol     = H
 
+
+[pulse5]
+
+MBoffset  = 10000			
+DIGoffset = 10000
+PRIoffset = 10000
+Frequency = 8500			
+TxPol     = V
+RxPol     = H
+
+
+[pulse6]
+MBoffset  = 10000			
+DIGoffset = 10000
+PRIoffset = 10000
+Frequency = 8500			
+TxPol     = V
+RxPol     = H
 
 

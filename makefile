@@ -1,8 +1,8 @@
 CC		= g++
 CFLAGS		= -g -c -Wall 
-LDFLAGS		= 
+LDFLAGS		= -L/usr/include/boost/filesystem -lm -lboost_system
 SOURCES		= cnc.cpp tcpsocket/tcpstream.cpp tcpsocket/tcpconnector.cpp
-INCLUDES	= -I.
+INCLUDES	= -I. 
 OBJECTS		= $(SOURCES:.cpp=.o)
 TARGET		= cnc
 
