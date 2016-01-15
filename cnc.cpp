@@ -3,7 +3,6 @@
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
-#include <string>
 #include <iostream>
 //  sudo apt-get install libboost-filesystem1.54.0
 //  sudo apt-get install libboost-filesystem1.55-dev
@@ -18,52 +17,13 @@
 #include "tcpsocket/tcpconnector.h"
 
 
-
-
-
-
-
-
 //functions
 int timeStrToInt(const string time);
-
-/*
-// Parameters from header file that are necessary for this parser
-typedef struct
-{
-    const char* StartTime;
-    const char* EndTime;
-
-} configuration;
-*/
-
-/*
-// Handler used by the parser to assign values to variables.
-// Variables are declared in the configuration struct
-static int handler(void* user, const char* section, const char* name,
-                   const char* value)
-{
-    configuration* pconfig = (configuration*)user;
-
-    //#define MATCH(s, n) strcmp(section, s) == 0 && strcmp(name, n) == 0
-    //got rid of above line since sections are not necessary here. They are
-    //necessary for the Rhino
-    #define MATCH(n) strcmp(name, n) == 0
-    if (MATCH("StartTime")) {
-        pconfig->StartTime = strdup(value);
-    } else if (MATCH("EndTime")) {
-        pconfig->EndTime = strdup(value);
-    }  else {
-        return 0;  
-    }
-    return 1;
-}
-*/
+void getAllParameters(INIReader reader, char line[409]);
 
 
 int main(int argc, char* argv[])
 {
-    
     // Character array containing the command to launch the Audio Recording
     char command[100];
     unsigned int StartTime, EndTime;
@@ -74,13 +34,9 @@ int main(int argc, char* argv[])
     string message;
     char line[410];
     TCPConnector* connector = new TCPConnector();
-    TCPStream* stream = connector->connect("localhost", 9999);
-
-    // closes program if file can't be found
-//    configuration config;
+    TCPStream* stream = connector->connect("192.168.0.2", 9999);
     
     // Waits for 'NeXtRAD Header.txt' to appear
-    //ini_parse("NeXtRAD Header.txt", handler, &config) < 0
     while (!boost::filesystem::exists( "NeXtRAD Header.txt" ) ) 
     {
         // check every 1 second
@@ -88,12 +44,10 @@ int main(int argc, char* argv[])
         printf("NeXtRAD Header.txt not located.\n");
     }
     
-
-
-
-    
+    // Once the file has been located (from above) it then opens (below)
     INIReader reader("NeXtRAD Header.txt");
     
+    // 
     if (reader.ParseError() < 0) {
         std::cout << "Can't load 'NeXtRAD Header.txt'\n";
         return 1;
@@ -115,12 +69,27 @@ int main(int argc, char* argv[])
     sprintf(command, "./asterisk_recorder %u %u > redirection &", StartTime, EndTime);
     system(command);
     
-    // Connects to Rhino
     
+    // Connects to Rhino
     if (stream) {
         message = "Is there life on Mars?";
         stream->send(message.c_str(), message.size());
         printf("sent - %s\n", message.c_str());
+        len = stream->receive(line, sizeof(line));
+        line[len] = 0;
+        printf("received - %s\n", line);
+        delete stream;
+    }
+    
+    
+    stream = connector->connect("192.168.0.2", 9999);
+    if (stream) {
+        char msg[409];
+        
+        getAllParameters(reader, msg);
+        
+        stream->send(msg, 409);
+        printf("sent - %s\n", msg);
         len = stream->receive(line, sizeof(line));
         line[len] = 0;
         printf("received - %s\n", line);
@@ -142,6 +111,8 @@ int main(int argc, char* argv[])
     return 0;
 }
 
+
+
 int timeStrToInt(const string time)
 {
     struct tm tm;
@@ -149,4 +120,69 @@ int timeStrToInt(const string time)
     time_t t = mktime(&tm); 
     
     return t;
+}
+
+
+
+
+void getAllParameters(INIReader reader, char line[409])
+{
+    int StartTime = timeStrToInt(reader.Get("settings","StartTime","UNKNOWN"));
+    int EndTime = timeStrToInt(reader.Get("settings","EndTime","UNKNOWN"));
+    
+    // Message type
+    line[0] = 'P';
+
+    // N
+    line[1] = reader.GetInteger("settings","NumberOfPulses",1);
+
+    // M
+    line[2] = (reader.GetInteger("settings","Repeats",1) >> 24) & 0xFF;
+    line[3] = (reader.GetInteger("settings","Repeats",1) >> 16) & 0xFF;
+    line[4] = (reader.GetInteger("settings","Repeats",1) >> 8) & 0xFF;
+    line[5] = reader.GetInteger("settings","Repeats",1) & 0xFF;
+
+    // StartTime
+    line[6] = (StartTime >> 24) & 0xFF;
+    line[7] = (StartTime >> 16) & 0xFF;
+    line[8] = (StartTime >> 8) & 0xFF;
+    line[9] = StartTime & 0xFF;
+
+    // EndTime
+    line[10] = (EndTime >> 24) & 0xFF;
+    line[11] = (EndTime >> 16) & 0xFF;
+    line[12] = (EndTime >> 8) & 0xFF;
+    line[13] = EndTime & 0xFF;
+
+    // Pulse Parameters
+    for(int i = 0; i<32; i++)
+    {
+        string pulseno;
+        char pulsechar[8];
+        
+        sprintf(pulsechar, "pulse%d", i);
+        
+        pulseno = pulsechar;
+        
+        cout << pulseno << "\n";
+        
+        line[14+i*12] = (reader.GetInteger(pulseno,"MBoffset",1) >> 8) & 0xFF;
+        line[15+i*12] = (reader.GetInteger(pulseno,"MBoffset",1)) & 0xFF;
+        
+        line[16+i*12] = (reader.GetInteger(pulseno,"DIGoffset",1) >> 8) & 0xFF;
+        line[17+i*12] = (reader.GetInteger(pulseno,"DIGoffset",1)) & 0xFF;
+        
+        line[18+i*12] = (reader.GetInteger(pulseno,"PRIoffset",1) >> 8) & 0xFF;
+        line[19+i*12] = (reader.GetInteger(pulseno,"PRIoffset",1)) & 0xFF;
+        
+        line[20+i*12] = (reader.GetInteger(pulseno,"Frequency",1) >> 8) & 0xFF;
+        line[21+i*12] = (reader.GetInteger(pulseno,"Frequency",1)) & 0xFF;
+        
+        line[22+i*12] = (reader.GetInteger(pulseno,"Mode",1) >> 8) & 0xFF;
+        line[23+i*12] = (reader.GetInteger(pulseno,"Mode",1)) & 0xFF;
+        
+        line[24+i*12] = (reader.GetInteger(pulseno,"Notused",1) >> 8) & 0xFF;
+        line[25+i*12] = (reader.GetInteger(pulseno,"Notused",1)) & 0xFF;
+    }
+    
 }

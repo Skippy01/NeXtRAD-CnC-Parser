@@ -86,8 +86,8 @@ TgtLocationHt = 0.0235;
 NumberOfPulses = 1
 Repeats = 64
 
-% Pulse 1 parameters
-[pulse1]
+% Pulse 0 parameters
+[pulse0]
 % offsets are in us
 MBoffset  = 10000			
 DIGoffset = 10000
@@ -95,26 +95,35 @@ PRIoffset = 10000
 % in mHz
 Frequency = 8500
 % Either (V)ertical or (H)orizontal			
-TxPol     = V
-RxPol     = H
+Mode = 3
+Notused = 0
+
+% Pulse 1 parameters
+[pulse1]
+MBoffset  = 10000			
+DIGoffset = 10000
+PRIoffset = 10000
+Frequency = 8500
+Mode = 3
+Notused = 0
 
 % Pulse 2 parameters
 [pulse2]
 MBoffset  = 10000			
 DIGoffset = 10000
 PRIoffset = 10000
-Frequency = 8500			
-TxPol     = V
-RxPol     = H
+Frequency = 8500
+Mode = 3
+Notused = 0
 
 
 [pulse3]
 MBoffset  = 10000			
 DIGoffset = 10000
 PRIoffset = 10000
-Frequency = 8500			
-TxPol     = V
-RxPol     = H
+Frequency = 8500
+Mode = 3
+Notused = 0
 
 
 [pulse4]
@@ -122,8 +131,8 @@ MBoffset  = 10000
 DIGoffset = 10000
 PRIoffset = 10000
 Frequency = 8500			
-TxPol     = V
-RxPol     = H
+Mode = 3
+Notused = 0
 
 
 [pulse5]
@@ -132,8 +141,8 @@ MBoffset  = 10000
 DIGoffset = 10000
 PRIoffset = 10000
 Frequency = 8500			
-TxPol     = V
-RxPol     = H
+Mode = 3
+Notused = 0
 
 
 [pulse6]
@@ -141,7 +150,7 @@ MBoffset  = 10000
 DIGoffset = 10000
 PRIoffset = 10000
 Frequency = 8500			
-TxPol     = V
-RxPol     = H
+Mode = 3
+Notused = 0
 
 

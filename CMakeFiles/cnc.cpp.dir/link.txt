@@ -1,0 +1,1 @@
+/usr/bin/c++       CMakeFiles/cnc.cpp.dir/tcpsocket/tcpstream.o CMakeFiles/cnc.cpp.dir/tcpsocket/tcpconnector.o  -o cnc.cpp -rdynamic 
